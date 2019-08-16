@@ -29,27 +29,16 @@ $repmemo = str_replace(array("\r\n","\n","\r"),"<br />",$memo); //改行をタ�
 $repmemo = preg_replace('/(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)/', '<A href="\\1\\2">\\1\\2</A>', $repmemo); //URLをリンクへ変換
 $repmemo = preg_replace('/(&gt;&gt;([0-9]*))/','<a href="#no$2">$1</a>',$repmemo);   //アンカーをリンク付きに変換
 
-
 $wid = htmlspecialchars($_POST['wid']); //ID
 $now = date("(Y/m/d H:i)");     //現在時刻を変数へ
-$fp = fopen("bbs_log.txt","a");   //a・・・書き出し用のみでオープンします。ファイルポインタをファイルの終端に置きます。 
-
-//書込み処理
-fwrite($fp,"<form action='res_pro.php' method='post'><strong><a name='no".$count."'>".$count."</a>．".$username."</strong> ".$now."　ID:<a href='search.php?id=".$wid."'>".$wid."</a>　<input type='submit' name='res' value='このコメントにレスする'>　<input type='submit' name='del' value='削除'>　<input type='hidden' name='res_no' value='".$count."'><input type='hidden' name='user_id' value='".$userid."'></form>".$repmemo."\n");
-
-$memotxt = file("bbs_log.txt");   //ファイルの中身を変数へ
-if($memotxt != NULL)
-{
-   $_SESSION['res'] = "コメントを書き込みました。";
+if (file_put_contents("bbs_log.txt",
+    "<form action='res_pro.php' method='post'><strong><a name='no".$count."'>".$count."</a>．".$username."</strong> ".$now."　ID:<a href='search.php?id=".$wid."'>".$wid."</a>　<input type='submit' name='res' value='このコメントにレスする'>　<input type='submit' name='del' value='削除'>　<input type='hidden' name='res_no' value='".$count."'><input type='hidden' name='user_id' value='".$userid."'></form>".$repmemo.PHP_EOL,
+    FILE_APPEND
+) === false) {
+    $_SESSION['res'] = "<font color='#ff0000'>エラー：コメントの書き込みに失敗しました。</font>";
+} else {
+    $_SESSION['res'] = "コメントを書き込みました。";
 }
-else
-{
-   $_SESSION['res'] = "<font color='#ff0000'>エラー：コメントの書き込みに失敗しました。</font>";
-}
-fclose($fp);
-
 $_SESSION['comment'] = "";
 
 header("location: ./bbs_index.php");
-exit;
-?>
