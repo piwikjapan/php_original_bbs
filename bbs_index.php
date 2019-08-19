@@ -37,7 +37,7 @@ $_SESSION['res'] = "";
         <form action="write_file.php" method="post"> 
         <br />名前<input type="text" name="name" value="名無しさん＠掲示板">
         <br />コメント
-        <br /><textarea name="txt" cols="50" rows="7"><?php print($_SESSION['comment']); ?></textarea>
+        <br /><textarea name="txt" cols="50" rows="7"><?php print(empty($_SESSION['comment']) ? '' : $_SESSION['comment']) ?></textarea>
         <input type="hidden" name="wid" value="<?php print($userid);?>">
         <br /><input type="submit" value="書き込む！" style="width:130px; height: 30px"> 　　<input type="reset" value="リセットする！" style="width:130px; height: 30px"></form>
     	</form>
