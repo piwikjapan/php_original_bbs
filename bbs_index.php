@@ -3,18 +3,7 @@ session_start();
 unset($_SESSION['user_id']);
 
 /* ID生成 */
-//IPアドレスを取得して変数にセットする
-$ipAddress = $_SERVER["REMOTE_ADDR"];
-
-//日付け取得
-$day = date("(Y/m/d)");    
-
-//合わせて暗号化
-$userkid = md5($ipAddress.$day);
-
-//頭から10までをIDとして扱う
-$userid = substr($userkid, 0, 10);
-
+$userid = substr(md5($_SERVER["REMOTE_ADDR"].date("(Y/m/d)")), 0, 10);
 $_SESSION['user_id'] = $userid;
 
 $res_com = $_SESSION['res'];

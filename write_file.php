@@ -3,8 +3,8 @@ session_start();
 //初期化
 $_SESSION['res']="";
 
-
-$userid = $_SESSION['user_id'];
+$userid = empty($_SESSION['user_id']) ?
+    substr(md5($_SERVER["REMOTE_ADDR"].date("(Y/m/d)")), 0, 10) : $_SESSION['user_id'];
 
 $fp = fopen("bbs_log.txt", "r");  //rで読み込む
 for($count = 1; fgets( $fp ); $count++);

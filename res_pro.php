@@ -5,8 +5,9 @@ $_SESSION['res'] = "";
 //どのボタンかおされたのか判別する
 if(isset($_POST['res']) || isset($_POST['del'])){
 
-    $userid = $_SESSION['user_id'];
-    $hid_user_id = $_POST['user_id'];
+    $userid = empty($_SESSION['user_id']) ?
+        substr(md5($_SERVER["REMOTE_ADDR"].date("(Y/m/d)")), 0, 10) : $_SESSION['user_id'];
+    $hid_user_id = empty($_POST['user_id']) ? 0 : $_POST['user_id'];
     
     if(isset($_POST['res']) && !isset($_POST['del'])){
         //「レスをする」の処理
