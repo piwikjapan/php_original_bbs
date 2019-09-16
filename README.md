@@ -34,3 +34,61 @@
 - レス(返信)機能
 - 同一IDのみのコメント削除機能
 - AAも表示可能
+
+## データベース化
+
+* 最低限の実装の ＤＤＬ (Data Definition Language: create table で始まるやつ） を掲載しておきます。
+  * データベース名 bbs_db、テーブル名 bbs、 UTF8 絵文字対応（utf8mb4）
+* seq と created カラムには自動的に値が入ります。
+* 他にも消去日時を加えるなどして拡張してください。
+
+```mysql
+$ mysql -uroot -ppentester
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 7
+Server version: 10.1.41-MariaDB-0ubuntu0.18.04.1 Ubuntu 18.04
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> CREATE DATABASE bbs_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+Query OK, 1 row affected (0.00 sec)
+
+MariaDB [(none)]>  grant all on bbs_db.* to bbs@'localhost' identified by 'bbs_pass' with grant option;
+Query OK, 0 rows affected (0.13 sec)
+
+MariaDB [(none)]> exit
+Bye
+$ mysql -ubbs -pbbs_pass bbs_db
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.1.41-MariaDB-0ubuntu0.18.04.1 Ubuntu 18.04
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [bbs_db]> CREATE TABLE `bbs` (
+    ->   `seq` mediumint(9) NOT NULL AUTO_INCREMENT,
+    ->   `id` varchar(10) NOT NULL,
+    ->   `res` text NOT NULL,
+    ->   `created` datetime DEFAULT CURRENT_TIMESTAMP,
+    ->   PRIMARY KEY (`seq`),
+    ->   key idx_id(`id`)
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+Query OK, 0 rows affected (0.18 sec)
+
+MariaDB [bbs_db]> INSERT bbs (id, res) VALUES ('aaaaaaaaaa', 'foo'); -- 動作テスト
+Query OK, 1 row affected (0.02 sec)
+
+MariaDB [bbs_db]> select * from bbs; -- 動作テスト
++-----+------------+-----+---------------------+
+| seq | id         | res | created             |
++-----+------------+-----+---------------------+
+|   1 | aaaaaaaaaa | foo | 2019-09-16 16:43:29 |
++-----+------------+-----+---------------------+
+1 row in set (0.00 sec)
+
+MariaDB [bbs_db]> exit
+```
